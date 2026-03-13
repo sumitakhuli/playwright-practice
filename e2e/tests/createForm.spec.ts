@@ -1,4 +1,4 @@
-import { test } from '@fixtures';
+import { test, expect } from '@fixtures';
 import { faker } from '@faker-js/faker';
 import { PublishedFormPage } from '@poms';
 
@@ -45,6 +45,16 @@ test.describe("Create and submit a form", () => {
             await page.goto(formEditorUrl);
             await page.waitForLoadState('domcontentloaded');
             await formBuilderPage.verifySubmissionVisible(userData.email);
+        });
+
+        await test.step("Step 4: Delete form and verify", async () => {
+            const formTitle = await formBuilderPage.getFormTitle();
+            await formBuilderPage.deleteForm();
+
+            // Simplest and most reliable check: The button with the form title should no longer exist
+            if (formTitle) {
+                await expect(page.getByRole('button', { name: formTitle })).toBeHidden({ timeout: 15000 });
+            }
         });
     });
 });

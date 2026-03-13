@@ -34,4 +34,20 @@ export class FormBuilderPage {
         // Playwright's expect will automatically retry until the email is visible or timeout is reached.
         await expect(this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).nth(1)).toBeVisible({ timeout: 15000 });
     }
+
+    getFormTitle = async () => {
+        const title = await this.page.getByTestId(BUILDER_SELECTORS.formTitle).textContent();
+        return title?.trim() || "";
+    }
+
+    deleteForm = async () => {
+        // Ensure menu is visible before clicking
+        await this.page.getByTestId(BUILDER_SELECTORS.menuButton).click();
+        await this.page.getByTestId(BUILDER_SELECTORS.deleteButton).click();
+        await this.page.getByTestId(BUILDER_SELECTORS.archiveCheckbox).check();
+        await this.page.getByTestId(BUILDER_SELECTORS.confirmDeleteButton).click();
+
+        // Wait for redirection back to dashboard
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.addFormButton)).toBeVisible({ timeout: 20000 });
+    }
 }
