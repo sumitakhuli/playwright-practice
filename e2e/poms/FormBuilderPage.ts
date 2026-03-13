@@ -1,25 +1,30 @@
 import { Page, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, BUILDER_ROLE_SELECTORS } from '@selectors';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS } from '@selectors';
 
 export class FormBuilderPage {
     constructor(private page: Page) { }
 
     createNewForm = async () => {
-        // await expect(this.page.getByTestId(BUILDER_SELECTORS.addFormButton)).toBeVisible({ timeout: 15000 });
         await this.page.getByTestId(BUILDER_SELECTORS.addFormButton).click();
-        // await expect(this.page.getByTestId(BUILDER_SELECTORS.startFromScratchButton)).toBeVisible({ timeout: 10000 });
         await this.page.getByTestId(BUILDER_SELECTORS.startFromScratchButton).click();
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.addElementButton)).toBeVisible({ timeout: 20000 });
     }
 
     addFields = async () => {
         await this.page.getByTestId(BUILDER_SELECTORS.addElementButton).click();
-        await this.page.getByRole('button', { name: BUILDER_ROLE_SELECTORS.nameElement }).click();
-        await this.page.getByRole('button', { name: BUILDER_ROLE_SELECTORS.phoneNumberElement }).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.name, exact: true }).first().click();
+        await this.page.getByTestId('elements-container').click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.phone, exact: true }).first().click();
+    }
+
+    verifySubmissionVisible = async (email: string) => {
+        await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
+        await expect(this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).nth(1)).toBeVisible({ timeout: 15000 });
     }
 
     publishAndGetPage = async (): Promise<Page> => {
         await this.page.getByTestId(BUILDER_SELECTORS.publishButton).click();
-        await expect(this.page.getByTestId(BUILDER_SELECTORS.previewButton)).toBeEnabled({ timeout: 10000 });
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.previewButton)).toBeEnabled({ timeout: 15000 });
         const popupPromise = this.page.waitForEvent('popup');
         await this.page.getByTestId(BUILDER_SELECTORS.previewButton).click();
         const popup = await popupPromise;
@@ -27,27 +32,59 @@ export class FormBuilderPage {
         return popup;
     }
 
-    verifySubmissionVisible = async (email: string) => {
-        await expect(this.page.getByTestId(BUILDER_SELECTORS.submissionsTab)).toBeVisible({ timeout: 15000 });
-        await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
-
-        // Playwright's expect will automatically retry until the email is visible or timeout is reached.
-        await expect(this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).nth(1)).toBeVisible({ timeout: 15000 });
-    }
-
     getFormTitle = async () => {
         const title = await this.page.getByTestId(BUILDER_SELECTORS.formTitle).textContent();
-        return title?.trim() || "";
+        return title?.trim() || '';
     }
 
     deleteForm = async () => {
-        // Ensure menu is visible before clicking
         await this.page.getByTestId(BUILDER_SELECTORS.menuButton).click();
         await this.page.getByTestId(BUILDER_SELECTORS.deleteButton).click();
         await this.page.getByTestId(BUILDER_SELECTORS.archiveCheckbox).check();
         await this.page.getByTestId(BUILDER_SELECTORS.confirmDeleteButton).click();
-
-        // Wait for redirection back to dashboard
         await expect(this.page.getByTestId(BUILDER_SELECTORS.addFormButton)).toBeVisible({ timeout: 20000 });
+    }
+
+    addSingleChoiceQuestion = async () => {
+        await this.page.getByTestId(BUILDER_SELECTORS.addElementButton).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.singleChoice, exact: true }).first().click();
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.addOption)).toBeVisible({ timeout: 10000 });
+
+        for (let i = 0; i < 6; i++) {
+            await this.page.getByTestId(BUILDER_SELECTORS.addOption).click();
+        }
+    }
+
+    addMultipleChoiceQuestion = async () => {
+        const multipleChoiceBtn = this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.multipleChoice, exact: true });
+        if (!(await multipleChoiceBtn.first().isVisible())) {
+            await this.page.getByTestId('elements-container').click();
+            await expect(multipleChoiceBtn.first()).toBeVisible({ timeout: 5000 });
+        }
+
+        await multipleChoiceBtn.first().click();
+
+        await this.page.getByRole('button', { name: 'Question' }).nth(2).click();
+
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.addOption)).toBeVisible({ timeout: 10000 });
+
+        for (let i = 0; i < 6; i++) {
+            await this.page.getByTestId(BUILDER_SELECTORS.addOption).click();
+        }
+    }
+
+    selectMultipleChoiceQuestion = async () => {
+        await this.page.getByRole('button', { name: 'Type a question More options' }).nth(1).click();
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.addOption)).toBeVisible({ timeout: 10000 });
+    }
+
+    hideQuestion = async () => {
+        await this.page.getByTestId(BUILDER_SELECTORS.hideSwitch).getByTestId(BUILDER_SELECTORS.nuiSwitch).click();
+        await this.page.waitForTimeout(1500);
+    }
+
+    randomizeQuestion = async () => {
+        await this.page.getByTestId(BUILDER_SELECTORS.randomizeSwitch).filter({ visible: true }).first().click();
+        await this.page.waitForTimeout(1500);
     }
 }
