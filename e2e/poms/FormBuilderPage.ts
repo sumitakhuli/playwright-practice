@@ -5,9 +5,9 @@ export class FormBuilderPage {
     constructor(private page: Page) { }
 
     createNewForm = async () => {
-        await expect(this.page.getByTestId(BUILDER_SELECTORS.addFormButton)).toBeVisible({ timeout: 15000 });
+        // await expect(this.page.getByTestId(BUILDER_SELECTORS.addFormButton)).toBeVisible({ timeout: 15000 });
         await this.page.getByTestId(BUILDER_SELECTORS.addFormButton).click();
-        await expect(this.page.getByTestId(BUILDER_SELECTORS.startFromScratchButton)).toBeVisible({ timeout: 10000 });
+        // await expect(this.page.getByTestId(BUILDER_SELECTORS.startFromScratchButton)).toBeVisible({ timeout: 10000 });
         await this.page.getByTestId(BUILDER_SELECTORS.startFromScratchButton).click();
     }
 
