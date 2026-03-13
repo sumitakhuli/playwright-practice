@@ -1,5 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
-const STORAGE_STATE = "./auth/user.json";
+export const STORAGE_STATE = "./auth/user.json";
 
 export default defineConfig({
   testDir: './e2e',
@@ -23,8 +23,14 @@ export default defineConfig({
       name: "Logged In tests",
       use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
       dependencies: ["login"],
+      teardown: "teardown",
       testMatch: "**/*.spec.ts",
       testIgnore: "**/login.setup.ts",
+    },
+    {
+      name: "teardown",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/global.teardown.ts",
     },
   ],
 });

@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { LOGIN_SELECTORS, BUILDER_SELECTORS } from "@selectors";
 
-const STORAGE_STATE = "./auth/user.json";
+import { STORAGE_STATE } from "../../playwright.config";
 
 test.describe('Login', () => {
     test('Login as Oliver', async ({ page }) => {
