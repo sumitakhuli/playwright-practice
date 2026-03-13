@@ -1,35 +1,30 @@
-{
-  "compilerOptions": {
-    "target": "es2019",
-      "module": "Node16",
-        "esModuleInterop": true,
-          "resolveJsonModule": true,
-            "baseUrl": "./e2e",
-              "moduleResolution": "node16",
-                "lib": ["ES2021", "dom"],
-                  "noEmit": true,
-                    "paths": {
-      /*
-       * This mapping is relative to "baseUrl".
-       */
-      "@auth/*": ["auth/*"],
-        "@config/*": ["config/*"],
-          "@selectors": ["constants/selectors"],
-            "@selectors/*": ["constants/selectors/*"],
-              "@texts": ["constants/texts"],
-                "@texts/*": ["constants/texts/*"],
-                  "@constants/*": ["constants/*"],
-                    "@routes": ["constants/routes.ts"],
-                      "@fixtures/*": ["fixtures/*"],
-                        "@fixtures": ["fixtures"],
-                          "@poms/*": ["poms/*"],
-                            "@poms": ["poms"],
-                              "@tests/*": ["tests/*"],
-                                "@utils": ["utils"],
-                                  "@utils/*": ["utils/*"],
-                                    "@types": ["types.d.ts"],
-                                      "@apis": ["apis"]
+import { defineConfig, devices } from '@playwright/test';
+const STORAGE_STATE = "./auth/user.json";
+
+export default defineConfig({
+  testDir: './e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: 2,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'https://neeto-form-web-playwright.neetodeployapp.com',
+    trace: 'on-first-retry',
+  },
+
+  projects: [
+    {
+      name: "login",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "login.setup.ts"
     },
-    "skipLibCheck": true
-  }
-}
+    {
+      name: "Logged In tests",
+      use: { ...devices["Desktop Chrome"], storageState: STORAGE_STATE },
+      dependencies: ["login"],
+      testMatch: "**/*.spec.ts",
+      testIgnore: "**/login.setup.ts",
+    },
+  ],
+});
