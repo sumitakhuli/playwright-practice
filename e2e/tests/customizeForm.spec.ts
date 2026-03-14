@@ -30,12 +30,10 @@ test.describe("Customize form", () => {
         });
 
         await test.step("Step 4: Unhide question and verify visibility", async () => {
-            // Ensure we are on the builder page
             await page.goto(formEditorUrl);
 
-            // Select the multiple choice question to show its settings
             await formBuilderPage.selectMultipleChoiceQuestion();
-            await formBuilderPage.hideQuestion(); // Unclick the hide switch
+            await formBuilderPage.hideQuestion();
 
             const popup = await formBuilderPage.publishAndGetPage();
             const publishedPage = new PublishedFormPage(popup);

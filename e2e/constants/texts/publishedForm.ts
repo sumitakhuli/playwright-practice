@@ -5,4 +5,5 @@ export const PUBLISHED_FORM_TEXTS = {
     emailRequired: 'Email is required',
     firstNameRequired: 'First name is required',
     lastNameRequired: 'Last name is required',
+    unitedStates: 'United States',
 };
