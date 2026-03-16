@@ -31,7 +31,8 @@ test.describe("Create and submit a form", () => {
 
         await test.step("Step 2: Add fields and publish form", async () => {
             await formBuilderPage.addFields();
-            const popup = await formBuilderPage.publishAndGetPage();
+            await formBuilderPage.publishForm();
+            const popup = await formBuilderPage.getPublishedPage();
 
             const publishedPage = new PublishedFormPage(popup);
 

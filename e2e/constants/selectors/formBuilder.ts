@@ -25,6 +25,9 @@ export const SETTINGS_SELECTORS = {
     saveChangesButton: 'save-changes-button',
     passwordInputField: 'password-input-field',
     passwordInputError: 'password-input-error',
+    uniqueSubmissionLink: 'unique-submission-settings-link',
+    cookieTrackRadio: 'cookie-track-radio-item',
+    noTrackRadio: 'no-track-radio-item',
 };
 
 export const ELEMENT_TYPE_SELECTORS = {

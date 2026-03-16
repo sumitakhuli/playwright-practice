@@ -78,4 +78,9 @@ export class PublishedFormPage {
         const testId = type === 'single' ? PUBLISHED_FORM_SELECTORS.singleChoiceOptionsContainer : PUBLISHED_FORM_SELECTORS.multipleChoiceOptionsContainer;
         await expect(this.page.getByTestId(testId)).toBeVisible({ timeout: 10000 });
     }
+
+    fillEmailAndSubmit = async (email: string) => {
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+    }
 }

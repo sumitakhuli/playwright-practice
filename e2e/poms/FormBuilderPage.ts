@@ -41,9 +41,7 @@ export class FormBuilderPage {
         await expect(this.page.getByTestId(ANALYTICS_SELECTORS.completionRateMetric).getByTestId(ANALYTICS_SELECTORS.insightsCount)).toHaveText(completionRate, { timeout: 15000 });
     }
 
-    publishAndGetPage = async (): Promise<Page> => {
-        await this.page.getByTestId(BUILDER_SELECTORS.publishButton).click();
-        await expect(this.page.getByTestId(BUILDER_SELECTORS.previewButton)).toBeEnabled({ timeout: 15000 });
+    getPublishedPage = async (): Promise<Page> => {
         const popupPromise = this.page.waitForEvent('popup');
         await this.page.getByTestId(BUILDER_SELECTORS.previewButton).click();
         const popup = await popupPromise;
@@ -156,5 +154,20 @@ export class FormBuilderPage {
         await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
 
         await newContext.close();
+    }
+
+    enableUniqueSubmission = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.uniqueSubmissionLink).click();
+        await expect(this.page.getByTestId(SETTINGS_SELECTORS.cookieTrackRadio)).toBeVisible({ timeout: 15000 });
+    }
+
+    trackByCookie = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.cookieTrackRadio).check();
+        await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
+    }
+
+    trackByNoCheck = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.noTrackRadio).check();
+        await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
     }
 }

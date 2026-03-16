@@ -30,7 +30,8 @@ test.describe("Customize form", () => {
         });
 
         await test.step("Step 3: Publish and verify randomization and hidden status", async () => {
-            const popup = await formBuilderPage.publishAndGetPage();
+            await formBuilderPage.publishForm();
+            const popup = await formBuilderPage.getPublishedPage();
             const publishedPage = new PublishedFormPage(popup);
 
             await publishedPage.verifyOptionsRandomized();
@@ -44,7 +45,8 @@ test.describe("Customize form", () => {
             await formBuilderPage.selectMultipleChoiceQuestion();
             await formBuilderPage.hideQuestion();
 
-            const popup = await formBuilderPage.publishAndGetPage();
+            await formBuilderPage.publishForm();
+            const popup = await formBuilderPage.getPublishedPage();
             const publishedPage = new PublishedFormPage(popup);
 
             await publishedPage.verifyQuestionVisible('multiple');
