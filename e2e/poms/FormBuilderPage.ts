@@ -20,16 +20,7 @@ export class FormBuilderPage {
     verifySubmissionVisible = async (email: string) => {
         await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
 
-        const submissionLocator = this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).first();
-
-        for (let attempt = 0; attempt < 2; attempt++) {
-            const isVisible = await submissionLocator.isVisible();
-            if (isVisible) break;
-            await this.page.waitForTimeout(5000);
-            await this.page.reload();
-        }
-
-        await expect(submissionLocator).toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByTestId('submission-label').locator('div').filter({ hasText: email })).toBeVisible({ timeout: 15000 });
     }
 
     publishForm = async () => {
