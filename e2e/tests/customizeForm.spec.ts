@@ -2,9 +2,18 @@ import { test, expect } from '@fixtures';
 import { PublishedFormPage } from '@poms';
 
 test.describe("Customize form", () => {
+    let formEditorUrl: string;
+
+    test.afterEach(async ({ page, formBuilderPage }) => {
+        if (formEditorUrl) {
+            await page.goto(formEditorUrl);
+            await page.waitForLoadState('domcontentloaded');
+        }
+        await formBuilderPage.safeDeleteForm();
+    });
+
     test("Customize form's field elements: randomize and hide", async ({ page, formBuilderPage }) => {
         test.setTimeout(120000);
-        let formEditorUrl: string;
 
         await test.step("Step 1: Create a new form", async () => {
             await page.goto('/');
@@ -40,11 +49,6 @@ test.describe("Customize form", () => {
 
             await publishedPage.verifyQuestionVisible('multiple');
             await popup.close();
-        });
-
-        await test.step("Step 5: Cleanup", async () => {
-            await page.goto(formEditorUrl);
-            await formBuilderPage.deleteForm();
         });
     });
 });

@@ -3,6 +3,16 @@ import { BUILDER_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
 import { PUBLISHED_FORM_TEXTS } from '@texts';
 
 test.describe("Verify form insights", () => {
+    let formEditorUrl: string;
+
+    test.afterEach(async ({ page, formBuilderPage }) => {
+        if (formEditorUrl) {
+            await page.goto(formEditorUrl);
+            await page.waitForLoadState('domcontentloaded');
+        }
+        await formBuilderPage.safeDeleteForm();
+    });
+
     test("Verify all insights fields in analytics", async ({ page, formBuilderPage }) => {
         test.setTimeout(120000);
         let analyticsURL: string;
@@ -10,6 +20,7 @@ test.describe("Verify form insights", () => {
         await test.step("Step 1: Create a new form and publish it", async () => {
             await page.goto('/');
             await formBuilderPage.createNewForm();
+            formEditorUrl = page.url();
             await formBuilderPage.publishForm();
         });
 
@@ -42,7 +53,7 @@ test.describe("Verify form insights", () => {
             await page2.waitForLoadState('networkidle');
             await page2.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).click();
             await page2.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill('hello');
-            await page2.waitForTimeout(2000); // Give tracker time to record interaction as "start"
+            await page2.waitForTimeout(2000);
             await page2.close();
         });
 
@@ -67,10 +78,6 @@ test.describe("Verify form insights", () => {
         await test.step("Step 9: Verify all metrics increase and completion rate calculates", async () => {
             await page.goto(analyticsURL);
             await formBuilderPage.verifyInsights('3', '1', '1', '100%');
-        });
-
-        await test.step("Step 10: Delete the form", async () => {
-            await formBuilderPage.deleteForm();
         });
     });
 });

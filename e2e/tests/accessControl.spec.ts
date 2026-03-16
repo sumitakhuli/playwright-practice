@@ -2,6 +2,10 @@ import { test, expect } from '@fixtures';
 import { faker } from '@faker-js/faker';
 
 test.describe("Access Control", () => {
+    test.afterEach(async ({ formBuilderPage }) => {
+        await formBuilderPage.safeDeleteForm();
+    });
+
     test("Verify password protected form", async ({ page, formBuilderPage, browser }) => {
         test.setTimeout(120000);
         const email = faker.internet.email();
@@ -25,10 +29,7 @@ test.describe("Access Control", () => {
         await test.step("Step 4: Verify submission is visible in submissions tab", async () => {
             await formBuilderPage.verifySubmissionVisible(email);
         });
-
-        await test.step("Step 5: Delete the form", async () => {
-            await formBuilderPage.deleteForm();
-        });
     });
 });
+
 

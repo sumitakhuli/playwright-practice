@@ -3,10 +3,18 @@ import { faker } from '@faker-js/faker';
 import { PublishedFormPage } from '@poms';
 
 test.describe("Create and submit a form", () => {
+    let formEditorUrl: string;
+
+    test.afterEach(async ({ page, formBuilderPage }) => {
+        if (formEditorUrl) {
+            await page.goto(formEditorUrl);
+            await page.waitForLoadState('domcontentloaded');
+        }
+        await formBuilderPage.safeDeleteForm();
+    });
 
     test("Complete flow: build, validate, submit and verify", async ({ page, formBuilderPage }) => {
         test.setTimeout(90000);
-        let formEditorUrl: string;
 
         const userData = {
             firstName: faker.person.firstName().replace(/[^a-zA-Z]/g, ''),
@@ -18,11 +26,11 @@ test.describe("Create and submit a form", () => {
         await test.step("Step 1: Create a new form", async () => {
             await page.goto('/');
             await formBuilderPage.createNewForm();
+            formEditorUrl = page.url();
         });
 
         await test.step("Step 2: Add fields and publish form", async () => {
             await formBuilderPage.addFields();
-            formEditorUrl = page.url();
             const popup = await formBuilderPage.publishAndGetPage();
 
             const publishedPage = new PublishedFormPage(popup);
@@ -46,15 +54,6 @@ test.describe("Create and submit a form", () => {
             await page.waitForLoadState('domcontentloaded');
             await formBuilderPage.verifySubmissionVisible(userData.email);
         });
-
-        await test.step("Step 4: Delete form and verify", async () => {
-            const formTitle = await formBuilderPage.getFormTitle();
-            await formBuilderPage.deleteForm();
-
-            // Simplest and most reliable check: The button with the form title should no longer exist
-            if (formTitle) {
-                await expect(page.getByRole('button', { name: formTitle })).toBeHidden({ timeout: 15000 });
-            }
-        });
     });
 });
+

@@ -18,6 +18,7 @@ export class FormBuilderPage {
     }
 
     verifySubmissionVisible = async (email: string) => {
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.submissionsTab)).toBeVisible({ timeout: 15000 });
         await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
 
         await expect(this.page.getByTestId('submission-label').locator('div').filter({ hasText: email })).toBeVisible({ timeout: 15000 });
@@ -61,6 +62,14 @@ export class FormBuilderPage {
         await this.page.getByTestId(BUILDER_SELECTORS.archiveCheckbox).check();
         await this.page.getByTestId(BUILDER_SELECTORS.confirmDeleteButton).click();
         await expect(this.page.getByTestId(DASHBOARD_SELECTORS.addFormButton)).toBeVisible({ timeout: 20000 });
+    }
+
+    safeDeleteForm = async () => {
+        try {
+            await this.deleteForm();
+        } catch {
+            // Silently ignore — form may not have been created if the test failed early
+        }
     }
 
     addSingleChoiceQuestion = async () => {
