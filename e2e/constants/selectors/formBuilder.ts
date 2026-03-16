@@ -9,6 +9,7 @@ export const BUILDER_SELECTORS = {
     publishButton: 'publish-button',
     previewButton: 'publish-preview-button',
     submissionsTab: 'submissions-tab',
+    submissionLabel: 'submission-label',
     analyticsTab: 'analytics-tab',
     buildTab: 'builder-tab',
     formTitle: 'form-title',

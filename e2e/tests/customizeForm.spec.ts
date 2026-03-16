@@ -1,5 +1,4 @@
-import { test, expect } from '@fixtures';
-import { PublishedFormPage } from '@poms';
+import { test } from '@fixtures';
 
 test.describe("Customize form", () => {
     let formEditorUrl: string;
@@ -31,12 +30,11 @@ test.describe("Customize form", () => {
 
         await test.step("Step 3: Publish and verify randomization and hidden status", async () => {
             await formBuilderPage.publishForm();
-            const popup = await formBuilderPage.getPublishedPage();
-            const publishedPage = new PublishedFormPage(popup);
+            const publishedPage = await formBuilderPage.getPublishedPage();
 
             await publishedPage.verifyOptionsRandomized();
             await publishedPage.verifyQuestionHidden('multiple');
-            await popup.close();
+            await publishedPage.close();
         });
 
         await test.step("Step 4: Unhide question and verify visibility", async () => {
@@ -46,11 +44,10 @@ test.describe("Customize form", () => {
             await formBuilderPage.hideQuestion();
 
             await formBuilderPage.publishForm();
-            const popup = await formBuilderPage.getPublishedPage();
-            const publishedPage = new PublishedFormPage(popup);
+            const publishedPage = await formBuilderPage.getPublishedPage();
 
             await publishedPage.verifyQuestionVisible('multiple');
-            await popup.close();
+            await publishedPage.close();
         });
     });
 });

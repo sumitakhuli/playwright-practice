@@ -3,7 +3,7 @@ import { PUBLISHED_FORM_SELECTORS } from '@selectors';
 import { PUBLISHED_FORM_TEXTS } from '@texts';
 
 export class PublishedFormPage {
-    constructor(private page: Page) { }
+    constructor(public page: Page) { }
 
     verifyFieldsVisible = async () => {
         await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField)).toBeVisible();
@@ -82,5 +82,17 @@ export class PublishedFormPage {
     fillEmailAndSubmit = async (email: string) => {
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+    }
+
+    verifyThankYou = async () => {
+        await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
+    }
+
+    verifySubmissionBlocked = async () => {
+        await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.submissionBlocked })).toBeVisible({ timeout: 15000 });
+    }
+
+    close = async () => {
+        await this.page.close();
     }
 }

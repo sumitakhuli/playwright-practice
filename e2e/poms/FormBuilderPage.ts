@@ -1,5 +1,6 @@
 import { Page, Browser, expect } from '@playwright/test';
 import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
+import { PublishedFormPage } from './PublishedFormPage';
 
 export class FormBuilderPage {
     constructor(private page: Page) { }
@@ -21,7 +22,7 @@ export class FormBuilderPage {
         await expect(this.page.getByTestId(BUILDER_SELECTORS.submissionsTab)).toBeVisible({ timeout: 15000 });
         await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
 
-        await expect(this.page.getByTestId('submission-label').locator('div').filter({ hasText: email })).toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByTestId(BUILDER_SELECTORS.submissionLabel).locator('div').filter({ hasText: email })).toBeVisible({ timeout: 15000 });
     }
 
     publishForm = async () => {
@@ -41,12 +42,12 @@ export class FormBuilderPage {
         await expect(this.page.getByTestId(ANALYTICS_SELECTORS.completionRateMetric).getByTestId(ANALYTICS_SELECTORS.insightsCount)).toHaveText(completionRate, { timeout: 15000 });
     }
 
-    getPublishedPage = async (): Promise<Page> => {
+    getPublishedPage = async (): Promise<PublishedFormPage> => {
         const popupPromise = this.page.waitForEvent('popup');
         await this.page.getByTestId(BUILDER_SELECTORS.previewButton).click();
         const popup = await popupPromise;
         await popup.waitForLoadState();
-        return popup;
+        return new PublishedFormPage(popup);
     }
 
     getFormTitle = async () => {
@@ -152,6 +153,7 @@ export class FormBuilderPage {
 
         await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
         await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+        await expect(newPage.getByRole('heading', { name: 'Thank you', exact: false })).toBeVisible({ timeout: 15000 });
 
         await newContext.close();
     }
@@ -169,5 +171,22 @@ export class FormBuilderPage {
     trackByNoCheck = async () => {
         await this.page.getByTestId(SETTINGS_SELECTORS.noTrackRadio).check();
         await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
+    }
+
+    submitFormInNewContext = async (browser: Browser, email: string) => {
+        const previewHref = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
+        const origin = new URL(this.page.url()).origin;
+        const formUrl = previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
+
+        const newContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+        const newPage = await newContext.newPage();
+        await newPage.goto(formUrl);
+        await newPage.waitForLoadState('domcontentloaded');
+
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+        await expect(newPage.getByRole('heading', { name: 'Thank you' })).toBeVisible({ timeout: 15000 });
+
+        await newContext.close();
     }
 }

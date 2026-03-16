@@ -1,6 +1,5 @@
-import { test, expect } from '@fixtures';
+import { test } from '@fixtures';
 import { faker } from '@faker-js/faker';
-import { PublishedFormPage } from '@poms';
 
 test.describe("Create and submit a form", () => {
     let formEditorUrl: string;
@@ -32,9 +31,7 @@ test.describe("Create and submit a form", () => {
         await test.step("Step 2: Add fields and publish form", async () => {
             await formBuilderPage.addFields();
             await formBuilderPage.publishForm();
-            const popup = await formBuilderPage.getPublishedPage();
-
-            const publishedPage = new PublishedFormPage(popup);
+            const publishedPage = await formBuilderPage.getPublishedPage();
 
             await test.step("Step 2.1: Verify fields visibility", async () => {
                 await publishedPage.verifyFieldsVisible();
