@@ -18,6 +18,15 @@ export const BUILDER_SELECTORS = {
     confirmDeleteButton: 'delete-archive-alert-delete-button',
 };
 
+export const SETTINGS_SELECTORS = {
+    settingsTab: 'settings-tab',
+    accessControlLink: 'access-control-settings-link',
+    passwordProtectedRadio: 'access-control-password-protected-radio-input',
+    saveChangesButton: 'save-changes-button',
+    passwordInputField: 'password-input-field',
+    passwordInputError: 'password-input-error',
+};
+
 export const ELEMENT_TYPE_SELECTORS = {
     singleChoice: 'Single choice',
     multipleChoice: 'Multiple choice',
@@ -41,3 +50,4 @@ export const ANALYTICS_SELECTORS = {
     completionRateMetric: 'completion-rate-metric',
     insightsCount: 'insights-count',
 };
+

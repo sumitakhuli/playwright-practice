@@ -1,5 +1,5 @@
-import { Page, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS } from '@selectors';
+import { Page, Browser, expect } from '@playwright/test';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
 
 export class FormBuilderPage {
     constructor(private page: Page) { }
@@ -19,7 +19,17 @@ export class FormBuilderPage {
 
     verifySubmissionVisible = async (email: string) => {
         await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
-        await expect(this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).nth(1)).toBeVisible({ timeout: 15000 });
+
+        const submissionLocator = this.page.locator('div').filter({ hasText: new RegExp(`^${email}$`) }).first();
+
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const isVisible = await submissionLocator.isVisible();
+            if (isVisible) break;
+            await this.page.waitForTimeout(5000);
+            await this.page.reload();
+        }
+
+        await expect(submissionLocator).toBeVisible({ timeout: 15000 });
     }
 
     publishForm = async () => {
@@ -103,5 +113,48 @@ export class FormBuilderPage {
     randomizeQuestion = async () => {
         await this.page.getByTestId(QUESTION_SETTINGS_SELECTORS.randomizeSwitch).filter({ visible: true }).first().click();
         await this.page.waitForTimeout(1500);
+    }
+
+    navigateToSettings = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.settingsTab).click();
+        await expect(this.page.getByTestId(SETTINGS_SELECTORS.accessControlLink)).toBeVisible({ timeout: 15000 });
+    }
+
+    addAccessControl = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.accessControlLink).click();
+        await expect(this.page.getByTestId(SETTINGS_SELECTORS.passwordProtectedRadio)).toBeVisible({ timeout: 15000 });
+    }
+
+    addAccessControlWithPassword = async () => {
+        await this.page.getByTestId(SETTINGS_SELECTORS.passwordProtectedRadio).check();
+
+        await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
+        await expect(this.page.getByTestId(SETTINGS_SELECTORS.passwordInputError)).toBeVisible({ timeout: 5000 });
+
+        await this.page.getByTestId(SETTINGS_SELECTORS.passwordInputField).fill('test');
+        await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
+    }
+
+    FillFormWithNewContext = async (browser: Browser, email: string) => {
+        const previewHref = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
+        const origin = new URL(this.page.url()).origin;
+        const formUrl = previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
+
+        const newContext = await browser.newContext({
+            storageState: { cookies: [], origins: [] }
+        });
+
+        const newPage = await newContext.newPage();
+        await newPage.goto(formUrl);
+        await newPage.waitForLoadState('domcontentloaded');
+
+        await expect(newPage.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField)).toBeVisible({ timeout: 15000 });
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField).fill('test');
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.continueButton).click();
+
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
+        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+
+        await newContext.close();
     }
 }
