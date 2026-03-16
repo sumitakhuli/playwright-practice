@@ -16,21 +16,15 @@ test.describe("Unique Submission", () => {
         test.setTimeout(120000);
 
         await test.step("Step 1: Create a new form and publish it", async () => {
-            await page.goto('/');
-            await formBuilderPage.createNewForm();
-            formEditorUrl = page.url();
-            await formBuilderPage.publishForm();
+            formEditorUrl = await formBuilderPage.createAndPublishForm();
         });
 
         await test.step("Step 2: Navigate to settings and enable Unique Submission with cookie tracking", async () => {
-            await formBuilderPage.navigateToSettings();
-            await formBuilderPage.enableUniqueSubmission();
-            await formBuilderPage.trackByCookie();
+            await formBuilderPage.enableUniqueSubmissionWithTracking('cookie');
         });
 
         await test.step("Step 3: Submit the form once from the same browser (first submission should succeed)", async () => {
-            const publishedPage = await formBuilderPage.getPublishedPage();
-            await publishedPage.fillEmailAndSubmit(faker.internet.email());
+            const publishedPage = await formBuilderPage.submitPublishedForm(faker.internet.email());
             await publishedPage.verifyThankYou();
             await publishedPage.close();
         });
@@ -48,19 +42,17 @@ test.describe("Unique Submission", () => {
         await test.step("Step 6: Switch to No check — disable unique submission tracking", async () => {
             await page.goto(formEditorUrl);
             await page.waitForLoadState('domcontentloaded');
-            await formBuilderPage.navigateToSettings();
-            await formBuilderPage.enableUniqueSubmission();
-            await formBuilderPage.trackByNoCheck();
+            await formBuilderPage.enableUniqueSubmissionWithTracking('noCheck');
         });
 
         await test.step("Step 7: Same browser can now submit multiple times without restriction", async () => {
-            const publishedPage1 = await formBuilderPage.getPublishedPage();
-            await publishedPage1.fillEmailAndSubmit(faker.internet.email());
+            const email1 = faker.internet.email();
+            const publishedPage1 = await formBuilderPage.submitPublishedForm(email1);
             await publishedPage1.verifyThankYou();
             await publishedPage1.close();
 
-            const publishedPage2 = await formBuilderPage.getPublishedPage();
-            await publishedPage2.fillEmailAndSubmit(faker.internet.email());
+            const email2 = faker.internet.email();
+            const publishedPage2 = await formBuilderPage.submitPublishedForm(email2);
             await publishedPage2.verifyThankYou();
             await publishedPage2.close();
         });

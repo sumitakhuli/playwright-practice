@@ -84,6 +84,14 @@ export class PublishedFormPage {
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
     }
 
+    submitWithPassword = async (password: string, email: string) => {
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField)).toBeVisible({ timeout: 15000 });
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField).fill(password);
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.continueButton).click();
+
+        await this.fillEmailAndSubmit(email);
+    }
+
     verifyThankYou = async () => {
         await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
     }

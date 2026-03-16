@@ -1,5 +1,5 @@
 import { Page, Browser, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS } from '@selectors';
 import { PublishedFormPage } from './PublishedFormPage';
 
 export class FormBuilderPage {
@@ -147,13 +147,9 @@ export class FormBuilderPage {
         await newPage.goto(formUrl);
         await newPage.waitForLoadState('domcontentloaded');
 
-        await expect(newPage.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField)).toBeVisible({ timeout: 15000 });
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.passwordField).fill('test');
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.continueButton).click();
-
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
-        await expect(newPage.getByRole('heading', { name: 'Thank you', exact: false })).toBeVisible({ timeout: 15000 });
+        const publishedPage = new PublishedFormPage(newPage);
+        await publishedPage.submitWithPassword('test', email);
+        await publishedPage.verifyThankYou();
 
         await newContext.close();
     }
@@ -173,6 +169,30 @@ export class FormBuilderPage {
         await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
     }
 
+    createAndPublishForm = async (): Promise<string> => {
+        await this.page.goto('/');
+        await this.createNewForm();
+        const formEditorUrl = this.page.url();
+        await this.publishForm();
+        return formEditorUrl;
+    }
+
+    enableUniqueSubmissionWithTracking = async (trackingType: 'cookie' | 'noCheck') => {
+        await this.navigateToSettings();
+        await this.enableUniqueSubmission();
+        if (trackingType === 'cookie') {
+            await this.trackByCookie();
+        } else {
+            await this.trackByNoCheck();
+        }
+    }
+
+    submitPublishedForm = async (email: string) => {
+        const publishedPage = await this.getPublishedPage();
+        await publishedPage.fillEmailAndSubmit(email);
+        return publishedPage;
+    }
+
     submitFormInNewContext = async (browser: Browser, email: string) => {
         const previewHref = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
         const origin = new URL(this.page.url()).origin;
@@ -183,9 +203,9 @@ export class FormBuilderPage {
         await newPage.goto(formUrl);
         await newPage.waitForLoadState('domcontentloaded');
 
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(email);
-        await newPage.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
-        await expect(newPage.getByRole('heading', { name: 'Thank you' })).toBeVisible({ timeout: 15000 });
+        const publishedPage = new PublishedFormPage(newPage);
+        await publishedPage.fillEmailAndSubmit(email);
+        await publishedPage.verifyThankYou();
 
         await newContext.close();
     }

@@ -10,10 +10,10 @@ test.describe("Access Control", () => {
         test.setTimeout(120000);
         const email = faker.internet.email();
 
+        let formEditorUrl = '';
+
         await test.step("Step 1: Create a new form and publish it", async () => {
-            await page.goto('/');
-            await formBuilderPage.createNewForm();
-            await formBuilderPage.publishForm();
+            formEditorUrl = await formBuilderPage.createAndPublishForm();
         });
 
         await test.step("Step 2: Navigate to settings and configure access control", async () => {
