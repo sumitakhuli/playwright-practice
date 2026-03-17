@@ -209,4 +209,53 @@ export class FormBuilderPage {
 
         await newContext.close();
     }
+
+    deleteEmailField = async () => {
+        await this.page.getByTestId('email-more-dropdown').click();
+        await this.page.getByTestId('delete-element-button').click();
+        await this.page.waitForTimeout(1500);
+    }
+
+    addSingleChoiceWithTwoOptions = async () => {
+        await this.page.getByTestId('add-element-button').click();
+        await this.page.getByRole('button', { name: 'Single choice' }).click();
+        await this.page.waitForTimeout(1500);
+        await this.page.getByTestId('option-input-3').hover();
+        await this.page.getByTestId('delete-option-button-3').click();
+        await this.page.getByTestId('option-input-2').hover();
+        await this.page.getByTestId('delete-option-button-2').click();
+    }
+
+    addEmailField = async () => {
+        await this.page.getByRole('button', { name: 'Email' }).click();
+        await expect(this.page.getByTestId('email-text-field')).toBeVisible();
+    }
+
+    addCondition = async () => {
+        await this.page.getByTestId('conditional-logic-settings-link').click();
+        await this.page.getByTestId('no-data-primary-button').click();
+        await expect(this.page.getByTestId('main-header')).toBeVisible();
+    }
+
+    addConditionalLogic = async () => {
+        await this.page.getByTestId('nui-select-value-container').first().click();
+        await this.page.getByTestId('type-a-question-select-option').click();
+        await this.page.getByTestId('nui-select-value-container').nth(1).click();
+        await this.page.getByTestId('is-equal-to-select-option').click();
+        await this.page.getByTestId('nui-select-value-container').nth(2).click();
+        await this.page.getByTestId('option-1-select-option').click();
+        await this.page.getByTestId('nui-select-value-container').nth(3).click();
+        await this.page.getByTestId('show-select-option').click();
+        await this.page.getByTestId('nui-select-value-container').nth(4).click();
+        await this.page.getByTestId('email-select-option').click();
+        await this.page.getByTestId('save-changes-button').click();
+    }
+
+    changeConditionalLogic = async() => {
+        await this.page.getByTestId('conditional-logic-dropdown').click();
+        await this.page.getByTestId('conditions-edit-button').click();
+        await this.page.getByTestId('disabled-radio-input').check();
+        await this.page.getByTestId('save-changes-button').click();
+    }
+
 }
