@@ -36,8 +36,18 @@ export const ELEMENT_TYPE_SELECTORS = {
     multipleChoice: 'Multiple choice',
     name: 'Name',
     phone: 'Phone number',
+    starRating: 'Star rating',
+    opinionScale: 'Opinion scale',
+    matrix: 'Matrix',
+    email: 'Email',
     question: 'Question',
     typeQuestion: 'Type a question More options',
+};
+
+export const QUESTION_PROPERTIES_SELECTORS = {
+    contentField: 'content-text-field',
+    advancedProperties: 'Advanced properties',
+    fieldCodeField: 'field-code-text-field',
 };
 
 export const QUESTION_SETTINGS_SELECTORS = {

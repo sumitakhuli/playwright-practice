@@ -1,5 +1,5 @@
 import { Page, Browser, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS } from '@selectors';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS, QUESTION_PROPERTIES_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
 import { PublishedFormPage } from './PublishedFormPage';
 
 export class FormBuilderPage {
@@ -227,7 +227,7 @@ export class FormBuilderPage {
     }
 
     addEmailField = async () => {
-        await this.page.getByRole('button', { name: 'Email' }).click(); // standard locator
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.email }).click();
         await expect(this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.emailTextField)).toBeVisible();
     }
 
@@ -262,26 +262,27 @@ export class FormBuilderPage {
 
     addFieldforURLTest = async () => {
         await this.page.getByTestId(BUILDER_SELECTORS.addElementButton).click();
-        await this.page.getByRole('button', { name: 'Star rating' }).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.starRating }).click();
         await this.page.waitForTimeout(1500);
-        await this.page.getByRole('button', { name: 'Opinion scale' }).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.opinionScale }).click();
         await this.page.waitForTimeout(1500);
-        await this.page.getByRole('button', { name: 'Matrix' }).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.matrix }).click();
         await this.page.waitForTimeout(1500);
+    }
+
+    private editQuestionProperties = async (questionIndex: number, label: string, code: string) => {
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.question }).nth(questionIndex).click();
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.contentField).fill(label);
+        await this.page.getByRole('button', { name: QUESTION_PROPERTIES_SELECTORS.advancedProperties }).click();
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.fieldCodeField).fill(code);
     }
 
     editStarRating = async () => {
-        await this.page.getByRole('button', { name: 'Question' }).nth(1).click();
-        await this.page.getByTestId('content-text-field').fill('Star Rating');
-        await this.page.getByRole('button', { name: 'Advanced properties' }).click();
-        await this.page.getByTestId('field-code-text-field').fill('sr');
+        await this.editQuestionProperties(1, 'Star Rating', 'sr');
     }
 
     editOpinionScale = async () => {
-        await this.page.getByRole('button', { name: 'Question' }).nth(2).click();
-        await this.page.getByTestId('content-text-field').fill('Opinion Scale');
-        await this.page.getByRole('button', { name: 'Advanced properties' }).click();
-        await this.page.getByTestId('field-code-text-field').fill('os');
+        await this.editQuestionProperties(2, 'Opinion Scale', 'os');
     }
 
     editMatrix = async () => {
@@ -307,17 +308,15 @@ export class FormBuilderPage {
     }
 
     verifyEmail = async (email: string) => {
-        await expect(this.page.getByTestId('email-text-field')).toHaveValue(email);
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField)).toHaveValue(email);
     }
 
     verifyStarRating = async (starRating: number) => {
         await expect(
-      this.page
-        .getByTestId('star-rating-group')
-        .locator(`input[value="${starRating}"]`),
-    ).toBeChecked();
-        // const testId = `rating-icon-${starRating}`;
-        // await expect(this.page.getByTestId(testId)).toBeChecked();
+            this.page
+                .getByTestId(PUBLISHED_FORM_SELECTORS.starRatingGroup)
+                .locator(`input[value="${starRating}"]`),
+        ).toBeChecked();
     }
 
     verifyOpinionScale = async (opinionScale: number) => {
@@ -326,8 +325,8 @@ export class FormBuilderPage {
     }
 
     verifyMatrix = async () => {
-        await expect(this.page.getByTestId('matrix-radio-label').first()).toBeChecked();
-        await expect(this.page.getByTestId('matrix-radio-label').nth(4)).toBeChecked();
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).first()).toBeChecked();
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).nth(4)).toBeChecked();
         await expect(this.page.locator('tr:nth-child(3) > td:nth-child(4) > .neeto-form-radio')).toBeChecked();
     }
 }

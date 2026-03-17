@@ -12,5 +12,7 @@ export const PUBLISHED_FORM_SELECTORS = {
     formGroupQuestion: 'form-group-question',
     emailGroup: 'email-group',
     multipleChoiceGroup: 'multiple-choice-group',
+    starRatingGroup: 'star-rating-group',
+    matrixRadioLabel: 'matrix-radio-label',
 };
 

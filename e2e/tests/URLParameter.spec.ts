@@ -45,7 +45,21 @@ test.describe("URL Parameter", () => {
         });
 
         await test.step("Step 4.2: constructURL", async () => {
-            Url = Url + "?email=" + email + "&sr=" + starRating + "&os=" + opinionScale + "&mf.1=one&mf.2=two&mf.3=three";
+            const urlWithParams = new URL(Url);
+            const params = {
+                email: email,
+                sr: starRating.toString(),
+                os: opinionScale.toString(),
+                'mf.1': 'one',
+                'mf.2': 'two',
+                'mf.3': 'three'
+            };
+            
+            Object.entries(params).forEach(([key, value]) => {
+                urlWithParams.searchParams.set(key, value);
+            });
+
+            Url = urlWithParams.toString();
             await page.goto(Url);
             await page.waitForTimeout(1500);
         });
