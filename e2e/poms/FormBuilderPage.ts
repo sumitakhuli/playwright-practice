@@ -260,4 +260,74 @@ export class FormBuilderPage {
         await this.page.waitForTimeout(1500);
     }
 
+    addFieldforURLTest = async () => {
+        await this.page.getByTestId(BUILDER_SELECTORS.addElementButton).click();
+        await this.page.getByRole('button', { name: 'Star rating' }).click();
+        await this.page.waitForTimeout(1500);
+        await this.page.getByRole('button', { name: 'Opinion scale' }).click();
+        await this.page.waitForTimeout(1500);
+        await this.page.getByRole('button', { name: 'Matrix' }).click();
+        await this.page.waitForTimeout(1500);
+    }
+
+    editStarRating = async () => {
+        await this.page.getByRole('button', { name: 'Question' }).nth(1).click();
+        await this.page.getByTestId('content-text-field').fill('Star Rating');
+        await this.page.getByRole('button', { name: 'Advanced properties' }).click();
+        await this.page.getByTestId('field-code-text-field').fill('sr');
+    }
+
+    editOpinionScale = async () => {
+        await this.page.getByRole('button', { name: 'Question' }).nth(2).click();
+        await this.page.getByTestId('content-text-field').fill('Opinion Scale');
+        await this.page.getByRole('button', { name: 'Advanced properties' }).click();
+        await this.page.getByTestId('field-code-text-field').fill('os');
+    }
+
+    editMatrix = async () => {
+          await this.page.getByRole('button', { name: 'Question' }).nth(3).click();
+          await this.page.getByTestId('question-text-input-label').click();
+          await this.page.getByTestId('content-text-field').click();
+          await this.page.getByTestId('content-text-field').fill('Matrix');
+          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-0').click();
+          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-0').fill('1');
+          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-1').click();
+          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-1').fill('2');
+          await this.page.getByTestId('matrix-row-container').getByTestId('add-option-link').click();
+          await this.page.getByTestId('option-input-2').fill('3');
+          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-0').click();
+          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-0').fill('one');
+          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-1').click();
+          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-1').fill('two');
+          await this.page.getByTestId('matrix-column-container').getByTestId('add-option-link').click();
+          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-2').fill('three');
+          await this.page.getByRole('button', { name: 'Advanced properties' }).click();
+          await this.page.getByTestId('field-code-text-field').fill('mf');
+          await this.page.waitForTimeout(1500);
+    }
+
+    verifyEmail = async (email: string) => {
+        await expect(this.page.getByTestId('email-text-field')).toHaveValue(email);
+    }
+
+    verifyStarRating = async (starRating: number) => {
+        await expect(
+      this.page
+        .getByTestId('star-rating-group')
+        .locator(`input[value="${starRating}"]`),
+    ).toBeChecked();
+        // const testId = `rating-icon-${starRating}`;
+        // await expect(this.page.getByTestId(testId)).toBeChecked();
+    }
+
+    verifyOpinionScale = async (opinionScale: number) => {
+        const testId = `opinion-scale-item-${opinionScale}`;
+        await expect(this.page.getByTestId(testId)).toBeChecked();
+    }
+
+    verifyMatrix = async () => {
+        await expect(this.page.getByTestId('matrix-radio-label').first()).toBeChecked();
+        await expect(this.page.getByTestId('matrix-radio-label').nth(4)).toBeChecked();
+        await expect(this.page.locator('tr:nth-child(3) > td:nth-child(4) > .neeto-form-radio')).toBeChecked();
+    }
 }
