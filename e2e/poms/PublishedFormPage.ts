@@ -101,17 +101,17 @@ export class PublishedFormPage {
     }
 
     verifyConditionalLogic = async () => {
-        await expect(this.page.getByTestId('form-group-question')).toBeVisible({timeout: 15000});
-        await expect(this.page.getByTestId('email-group').getByTestId('form-group-question')).toBeHidden({timeout: 15000});
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeVisible({timeout: 15000});
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeHidden({timeout: 15000});
         await this.page.locator('label').filter({ hasText: 'Option 1' }).click();
-        await expect(this.page.getByTestId('email-group').getByTestId('form-group-question')).toBeVisible({timeout: 15000});
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeVisible({timeout: 15000});
         await this.page.locator('label').filter({ hasText: 'Option 2' }).click();
-        await expect(this.page.getByTestId('email-group').getByTestId('form-group-question')).toBeHidden({timeout: 15000});
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeHidden({timeout: 15000});
     }
 
     verifyNewConditionalLogic = async () => {
-        await expect(this.page.getByTestId('multiple-choice-group').getByTestId('form-group-question')).toBeVisible({timeout: 15000});
-        await expect(this.page.getByTestId('email-group').getByTestId('form-group-question')).toBeVisible();
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.multipleChoiceGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeVisible({timeout: 15000});
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeVisible({timeout: 15000});
     }
 
     close = async () => {

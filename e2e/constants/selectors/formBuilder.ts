@@ -55,3 +55,26 @@ export const ANALYTICS_SELECTORS = {
     insightsCount: 'insights-count',
 };
 
+export const CONDITIONAL_LOGIC_SELECTORS = {
+    settingsLink: 'conditional-logic-settings-link',
+    noDataPrimaryBtn: 'no-data-primary-button',
+    mainHeader: 'main-header',
+    selectValueContainer: 'nui-select-value-container',
+    typeQuestionOption: 'type-a-question-select-option',
+    isEqualToOption: 'is-equal-to-select-option',
+    option1Select: 'option-1-select-option',
+    showSelectOption: 'show-select-option',
+    emailSelectOption: 'email-select-option',
+    saveChangesBtn: 'save-changes-button',
+    conditionalLogicDropdown: 'conditional-logic-dropdown',
+    conditionsEditBtn: 'conditions-edit-button',
+    disabledRadioInput: 'disabled-radio-input',
+    emailMoreDropdown: 'email-more-dropdown',
+    deleteElementBtn: 'delete-element-button',
+    emailTextField: 'email-text-field',
+    optionInput2: 'option-input-2',
+    optionInput3: 'option-input-3',
+    deleteOption2Btn: 'delete-option-button-2',
+    deleteOption3Btn: 'delete-option-button-3'
+};
+

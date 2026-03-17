@@ -9,5 +9,8 @@ export const PUBLISHED_FORM_SELECTORS = {
     multipleChoiceOptionsContainer: 'multiple-choice-options-container',
     passwordField: 'password-text-field',
     continueButton: 'continue-button',
+    formGroupQuestion: 'form-group-question',
+    emailGroup: 'email-group',
+    multipleChoiceGroup: 'multiple-choice-group',
 };
 

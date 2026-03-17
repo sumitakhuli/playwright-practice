@@ -1,5 +1,5 @@
 import { Page, Browser, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS } from '@selectors';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS } from '@selectors';
 import { PublishedFormPage } from './PublishedFormPage';
 
 export class FormBuilderPage {
@@ -211,51 +211,53 @@ export class FormBuilderPage {
     }
 
     deleteEmailField = async () => {
-        await this.page.getByTestId('email-more-dropdown').click();
-        await this.page.getByTestId('delete-element-button').click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.emailMoreDropdown).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.deleteElementBtn).click();
         await this.page.waitForTimeout(1500);
     }
 
     addSingleChoiceWithTwoOptions = async () => {
-        await this.page.getByTestId('add-element-button').click();
-        await this.page.getByRole('button', { name: 'Single choice' }).click();
+        await this.page.getByTestId(BUILDER_SELECTORS.addElementButton).click();
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.singleChoice }).click();
         await this.page.waitForTimeout(1500);
-        await this.page.getByTestId('option-input-3').hover();
-        await this.page.getByTestId('delete-option-button-3').click();
-        await this.page.getByTestId('option-input-2').hover();
-        await this.page.getByTestId('delete-option-button-2').click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.optionInput3).hover();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.deleteOption3Btn).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.optionInput2).hover();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.deleteOption2Btn).click();
     }
 
     addEmailField = async () => {
-        await this.page.getByRole('button', { name: 'Email' }).click();
-        await expect(this.page.getByTestId('email-text-field')).toBeVisible();
+        await this.page.getByRole('button', { name: 'Email' }).click(); // standard locator
+        await expect(this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.emailTextField)).toBeVisible();
     }
 
     addCondition = async () => {
-        await this.page.getByTestId('conditional-logic-settings-link').click();
-        await this.page.getByTestId('no-data-primary-button').click();
-        await expect(this.page.getByTestId('main-header')).toBeVisible();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.settingsLink).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.noDataPrimaryBtn).click();
+        await expect(this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.mainHeader)).toBeVisible();
     }
 
     addConditionalLogic = async () => {
-        await this.page.getByTestId('nui-select-value-container').first().click();
-        await this.page.getByTestId('type-a-question-select-option').click();
-        await this.page.getByTestId('nui-select-value-container').nth(1).click();
-        await this.page.getByTestId('is-equal-to-select-option').click();
-        await this.page.getByTestId('nui-select-value-container').nth(2).click();
-        await this.page.getByTestId('option-1-select-option').click();
-        await this.page.getByTestId('nui-select-value-container').nth(3).click();
-        await this.page.getByTestId('show-select-option').click();
-        await this.page.getByTestId('nui-select-value-container').nth(4).click();
-        await this.page.getByTestId('email-select-option').click();
-        await this.page.getByTestId('save-changes-button').click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.selectValueContainer).first().click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.typeQuestionOption).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.selectValueContainer).nth(1).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.isEqualToOption).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.selectValueContainer).nth(2).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.option1Select).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.selectValueContainer).nth(3).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.showSelectOption).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.selectValueContainer).nth(4).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.emailSelectOption).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.saveChangesBtn).click();
+        await this.page.waitForTimeout(1500);
     }
 
     changeConditionalLogic = async() => {
-        await this.page.getByTestId('conditional-logic-dropdown').click();
-        await this.page.getByTestId('conditions-edit-button').click();
-        await this.page.getByTestId('disabled-radio-input').check();
-        await this.page.getByTestId('save-changes-button').click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.conditionalLogicDropdown).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.conditionsEditBtn).click();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.disabledRadioInput).check();
+        await this.page.getByTestId(CONDITIONAL_LOGIC_SELECTORS.saveChangesBtn).click();
+        await this.page.waitForTimeout(1500);
     }
 
 }
