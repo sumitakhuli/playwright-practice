@@ -88,3 +88,11 @@ export const CONDITIONAL_LOGIC_SELECTORS = {
     deleteOption3Btn: 'delete-option-button-3'
 };
 
+export const SUBMISSION_SELECTORS = {
+    submittedResponse: (index: number) => `submitted-response-${index}`,
+    viewSubmissionButton: (index: number) => `view-submission-${index}-button`,
+    actionDropdownBtn: 'action-dropdown-btn',
+    nuiDropdownIcon: 'nui-dropdown-icon',
+    pdfRadioLabel: 'pdf-radio-label',
+    closePanelButton: 'pane-close-button',
+};

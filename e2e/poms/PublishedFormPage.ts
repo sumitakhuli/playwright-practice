@@ -114,6 +114,54 @@ export class PublishedFormPage {
         await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailGroup).getByTestId(PUBLISHED_FORM_SELECTORS.formGroupQuestion)).toBeVisible({timeout: 15000});
     }
 
+    verifyEmail = async (email: string) => {
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField)).toHaveValue(email);
+    }
+
+    verifyStarRating = async (starRating: number) => {
+        await expect(
+            this.page
+                .getByTestId(PUBLISHED_FORM_SELECTORS.starRatingGroup)
+                .locator(`input[value="${starRating}"]`),
+        ).toBeChecked();
+    }
+
+    verifyOpinionScale = async (opinionScale: number) => {
+        const testId = `opinion-scale-item-${opinionScale}`;
+        await expect(this.page.getByTestId(testId)).toBeChecked();
+    }
+
+    verifyMatrix = async () => {
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).first()).toBeChecked();
+        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).nth(4)).toBeChecked();
+        await expect(this.page.locator('tr:nth-child(3) > td:nth-child(4) > .neeto-form-radio')).toBeChecked();
+    }
+
+    fillStarRating = async (rating: number) => {
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.starRatingGroup).locator('label').filter({ hasText: rating.toString() }).click();
+    }
+
+    fillOpinionScale = async (scale: number) => {
+        await this.page.getByTestId(`opinion-scale-item-${scale}`).click();
+    }
+
+    fillMatrix = async (row: number, col: number) => {
+        // This is a simple implementation assuming the matrix has radio-labels
+        // Adjusted to match the specific selector the user had: tr:nth-child(2) > td:nth-child(3) > .neeto-form-radio > .neeto-form-radio__checkmark
+        await this.page.locator(`tr:nth-child(${row}) > td:nth-child(${col}) > .neeto-form-radio`).click();
+    }
+
+    fillAndSubmitForm = async (data: { email: string; starRating: number; opinionScale: number; }) => {
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(data.email);
+        await this.fillStarRating(data.starRating);
+        await this.fillOpinionScale(data.opinionScale);
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).first().click();
+        await this.fillMatrix(2, 3);
+        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
+        await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
+        await this.page.close();
+    }
+
     close = async () => {
         await this.page.close();
     }

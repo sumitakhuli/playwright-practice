@@ -1,5 +1,5 @@
 import { Page, Browser, expect } from '@playwright/test';
-import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS, QUESTION_PROPERTIES_SELECTORS, PUBLISHED_FORM_SELECTORS } from '@selectors';
+import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS, QUESTION_PROPERTIES_SELECTORS, PUBLISHED_FORM_SELECTORS, SUBMISSION_SELECTORS } from '@selectors';
 import { PublishedFormPage } from './PublishedFormPage';
 
 export class FormBuilderPage {
@@ -134,15 +134,15 @@ export class FormBuilderPage {
         await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
     }
 
-    FillFormWithNewContext = async (browser: Browser, email: string) => {
+    getPublishedFormUrl = async (): Promise<string> => {
         const previewHref = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
         const origin = new URL(this.page.url()).origin;
-        const formUrl = previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
+        return previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
+    }
 
-        const newContext = await browser.newContext({
-            storageState: { cookies: [], origins: [] }
-        });
-
+    FillFormWithNewContext = async (browser: Browser, email: string) => {
+        const formUrl = await this.getPublishedFormUrl();
+        const newContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
         const newPage = await newContext.newPage();
         await newPage.goto(formUrl);
         await newPage.waitForLoadState('domcontentloaded');
@@ -306,27 +306,26 @@ export class FormBuilderPage {
           await this.page.getByTestId('field-code-text-field').fill('mf');
           await this.page.waitForTimeout(1500);
     }
-
-    verifyEmail = async (email: string) => {
-        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField)).toHaveValue(email);
+    navigateToSubmissions = async () => {
+        await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
+        await expect(this.page.getByTestId(SUBMISSION_SELECTORS.submittedResponse(1))).toBeVisible({ timeout: 15000 });
     }
 
-    verifyStarRating = async (starRating: number) => {
-        await expect(
-            this.page
-                .getByTestId(PUBLISHED_FORM_SELECTORS.starRatingGroup)
-                .locator(`input[value="${starRating}"]`),
-        ).toBeChecked();
+    viewSubmission = async (index: number) => {
+        await this.page.getByTestId(SUBMISSION_SELECTORS.submittedResponse(index)).hover();
+        await this.page.getByTestId(SUBMISSION_SELECTORS.viewSubmissionButton(index)).click();
     }
 
-    verifyOpinionScale = async (opinionScale: number) => {
-        const testId = `opinion-scale-item-${opinionScale}`;
-        await expect(this.page.getByTestId(testId)).toBeChecked();
+    downloadSubmission = async (): Promise<Page> => {
+        const popupPromise = this.page.waitForEvent('popup');
+        await this.page.getByTestId(SUBMISSION_SELECTORS.nuiDropdownIcon).click();
+        await this.page.getByTestId(SUBMISSION_SELECTORS.pdfRadioLabel).click();
+        await this.page.getByTestId(SUBMISSION_SELECTORS.actionDropdownBtn).click();
+        const popup = await popupPromise;
+        return popup;
     }
 
-    verifyMatrix = async () => {
-        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).first()).toBeChecked();
-        await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).nth(4)).toBeChecked();
-        await expect(this.page.locator('tr:nth-child(3) > td:nth-child(4) > .neeto-form-radio')).toBeChecked();
+    closePanel = async () => {
+        await this.page.getByTestId(SUBMISSION_SELECTORS.closePanelButton).click();
     }
 }

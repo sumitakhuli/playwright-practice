@@ -44,7 +44,7 @@ test.describe("URL Parameter", () => {
             Url = publishedPage.page.url();
         });
 
-        await test.step("Step 4.2: constructURL", async () => {
+        await test.step("Step 4.2: constructURL and navigate", async () => {
             const urlWithParams = new URL(Url);
             const params = {
                 email: email,
@@ -60,28 +60,28 @@ test.describe("URL Parameter", () => {
             });
 
             Url = urlWithParams.toString();
-            await page.goto(Url);
-            await page.waitForTimeout(1500);
+            await publishedPage.page.goto(Url);
+            await publishedPage.page.waitForLoadState('domcontentloaded');
         });
-    });
 
-    await test.step("Step 5: Verify URL parameters", async () => {
-        await test.step("Step 5.1: Verify email", async () => {
-            await formBuilderPage.verifyEmail(email);
+        await test.step("Step 5: Verify URL parameters on published page", async () => {
+            await test.step("Step 5.1: Verify email", async () => {
+                await publishedPage.verifyEmail(email);
+            });
+            await test.step("Step 5.2: Verify star rating", async () => {
+                await publishedPage.verifyStarRating(starRating);
+            });
+            await test.step("Step 5.3: Verify opinion scale", async () => {
+                await publishedPage.verifyOpinionScale(opinionScale);
+            });
+            await test.step("Step 5.4: Verify matrix", async () => {
+                await publishedPage.verifyMatrix();
+            });
         });
-        await test.step("Step 5.2: Verify star rating", async () => {
-            await formBuilderPage.verifyStarRating(starRating);
-        });
-        await test.step("Step 5.3: Verify opinion scale", async () => {
-            await formBuilderPage.verifyOpinionScale(opinionScale);
-        });
-        await test.step("Step 5.4: Verify matrix", async () => {
-            await formBuilderPage.verifyMatrix();
-        });
-    });
 
-    await test.step("Step 6: Close the published page", async () => {
-        await page.close();
+        await test.step("Step 6: Close the published page", async () => {
+            await publishedPage.close();
+        });
     });
    });
 });
