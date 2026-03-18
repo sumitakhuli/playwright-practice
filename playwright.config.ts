@@ -25,7 +25,12 @@ export default defineConfig({
       dependencies: ["login"],
       teardown: "teardown",
       testMatch: "**/*.spec.ts",
-      testIgnore: "**/login.setup.ts",
+      testIgnore: ["**/login.setup.ts", "**/uploadFile.spec.ts"],
+    },
+    {
+      name: "Common Tests",
+      use: { ...devices["Desktop Chrome"] },
+      testMatch: "**/uploadFile.spec.ts",
     },
     {
       name: "teardown",
