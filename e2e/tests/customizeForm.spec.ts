@@ -3,6 +3,12 @@ import { test } from '@fixtures';
 test.describe("Customize form", () => {
     let formEditorUrl: string;
 
+    test.beforeEach(async ({ page, formBuilderPage }) => {
+        await page.goto('/');
+        await formBuilderPage.createNewForm();
+        formEditorUrl = page.url();
+    });
+
     test.afterEach(async ({ page, formBuilderPage }) => {
         if (formEditorUrl) {
             await page.goto(formEditorUrl);
@@ -14,13 +20,7 @@ test.describe("Customize form", () => {
     test("Customize form's field elements: randomize and hide", async ({ page, formBuilderPage }) => {
         test.setTimeout(120000);
 
-        await test.step("Step 1: Create a new form", async () => {
-            await page.goto('/');
-            await formBuilderPage.createNewForm();
-            formEditorUrl = page.url();
-        });
-
-        await test.step("Step 2: Add single and multi choice questions with options", async () => {
+        await test.step("Step 1: Add single and multi choice questions with options", async () => {
             await formBuilderPage.addSingleChoiceQuestion();
             await formBuilderPage.randomizeQuestion();
 
@@ -28,7 +28,7 @@ test.describe("Customize form", () => {
             await formBuilderPage.hideQuestion();
         });
 
-        await test.step("Step 3: Publish and verify randomization and hidden status", async () => {
+        await test.step("Step 2: Publish and verify randomization and hidden status", async () => {
             await formBuilderPage.publishForm();
             const publishedPage = await formBuilderPage.getPublishedPage();
 
@@ -37,7 +37,7 @@ test.describe("Customize form", () => {
             await publishedPage.close();
         });
 
-        await test.step("Step 4: Unhide question and verify visibility", async () => {
+        await test.step("Step 3: Unhide question and verify visibility", async () => {
             await page.goto(formEditorUrl);
 
             await formBuilderPage.selectMultipleChoiceQuestion();

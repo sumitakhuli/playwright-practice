@@ -90,7 +90,7 @@ export class PublishedFormPage {
     }
 
     verifyThankYou = async () => {
-        await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
+        await expect(this.page.getByText(PUBLISHED_FORM_TEXTS.thankYou, { exact: false })).toBeVisible({ timeout: 15000 });
     }
 
     verifySubmissionBlocked = async () => {
