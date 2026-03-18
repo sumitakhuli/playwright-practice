@@ -1,6 +1,7 @@
 import { Page, Browser, expect } from '@playwright/test';
 import { BUILDER_SELECTORS, ELEMENT_TYPE_SELECTORS, ANALYTICS_SELECTORS, QUESTION_SETTINGS_SELECTORS, DASHBOARD_SELECTORS, SETTINGS_SELECTORS, CONDITIONAL_LOGIC_SELECTORS, QUESTION_PROPERTIES_SELECTORS, PUBLISHED_FORM_SELECTORS, SUBMISSION_SELECTORS } from '@selectors';
 import { PublishedFormPage } from './PublishedFormPage';
+import { getPdfTextAndDeletePdf } from '@utils';
 
 export class FormBuilderPage {
     constructor(private page: Page) { }
@@ -355,5 +356,21 @@ export class FormBuilderPage {
 
     closePanel = async () => {
         await this.page.getByTestId(SUBMISSION_SELECTORS.closePanelButton).click();
+    }
+
+    verifyDownloadedPdfContent = async (pdfPopup: Page, expectedStrings: (string | number)[]) => {
+        // Fetch the PDF binary content using the popup's context
+        const response = await pdfPopup.context().request.get(pdfPopup.url());
+        expect(response.ok(), "Failed to download PDF binary from popup URL").toBeTruthy();
+
+        const pdfText = await getPdfTextAndDeletePdf(await response.body());
+
+        // Normalize text for reliable matching (lower-case and collapse multiple spaces/newlines)
+        const normalizedText = pdfText.toLowerCase().replace(/\s+/g, ' ');
+
+        for (const str of expectedStrings) {
+            const target = str.toString().toLowerCase();
+            expect(normalizedText, `PDF content did not contain expected value: ${str}`).toContain(target);
+        }
     }
 }

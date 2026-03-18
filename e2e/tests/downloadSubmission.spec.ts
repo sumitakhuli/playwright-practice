@@ -1,6 +1,6 @@
 import { test, expect } from '@fixtures';
 import { faker } from '@faker-js/faker';
-import { TIMEOUT } from 'node:dns';
+import { getPdfTextAndDeletePdf } from '@utils';
 
 test.describe("Download Submission", () => {
     test.afterEach(async ({ formBuilderPage }) => {
@@ -38,9 +38,14 @@ test.describe("Download Submission", () => {
             await formBuilderPage.viewSubmission(1);
             
             const pdfPopup = await formBuilderPage.downloadSubmission();
-            // Verify content - checking if URL contains PDF related keywords or blob
-            // await page.waitForTimeout(3000);
-            await expect(pdfPopup).toHaveURL(/.*(pdf|blob).*/i);
+            
+            // Verifying PDF content using the reusable POM method
+            await formBuilderPage.verifyDownloadedPdfContent(pdfPopup, [
+                email,
+                starRating,
+                opinionScale
+            ]);
+            
             await pdfPopup.close();
         });
 
