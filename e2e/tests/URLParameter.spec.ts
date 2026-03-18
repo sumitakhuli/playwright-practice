@@ -56,7 +56,7 @@ test.describe("URL Parameter", () => {
             };
             
             Object.entries(params).forEach(([key, value]) => {
-                urlWithParams.searchParams.set(key, value);
+                urlWithParams.searchParams.set(key, encodeURIComponent(value));
             });
 
             Url = urlWithParams.toString();
