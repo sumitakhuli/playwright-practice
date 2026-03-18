@@ -16,9 +16,9 @@ test.describe("Create and submit a form", () => {
         test.setTimeout(90000);
 
         const userData = {
-            firstName: faker.person.firstName().replace(/[^a-zA-Z]/g, ''),
-            lastName: faker.person.lastName().replace(/[^a-zA-Z]/g, ''),
-            email: `test-${Date.now()}@example.com`,
+            firstName: faker.person.firstName(),
+            lastName: faker.person.lastName(),
+            email: faker.internet.email(),
             phone: '3022223333'
         };
 
@@ -44,6 +44,7 @@ test.describe("Create and submit a form", () => {
 
             await test.step("Step 2.3: Fill and submit valid response", async () => {
                 await publishedPage.submitForm(userData);
+                await publishedPage.close();
             });
         });
 

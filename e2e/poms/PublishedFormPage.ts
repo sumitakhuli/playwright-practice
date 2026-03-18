@@ -41,8 +41,7 @@ export class PublishedFormPage {
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.phoneNumberField).fill(data.phone);
         await expect(this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton)).toBeEnabled();
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
-
-        await expect(this.page.getByText(PUBLISHED_FORM_TEXTS.thankYou, { exact: false })).toBeVisible({ timeout: 15000 });
+        await this.verifyThankYou();
     }
 
     verifyOptionsRandomized = async () => {
@@ -52,21 +51,19 @@ export class PublishedFormPage {
         await expect(optionsContainer.locator('label').first()).toBeVisible({ timeout: 5000 });
 
         const optionsLabels = await optionsContainer.locator('label').allTextContents();
-        const cleanOptions = optionsLabels.map(opt => opt.trim()).filter(opt => opt !== '');
 
-        console.log('Found options in order:', cleanOptions);
-
-        if (cleanOptions.length < 2) {
-            throw new Error(`Not enough options found to check randomization. Found: ${cleanOptions.length}`);
+        if (optionsLabels.length < 2) {
+            throw new Error(`Not enough options found to check randomization. Found: ${optionsLabels.length}`);
         }
 
-        const sorted = [...cleanOptions].sort((a, b) => {
+        const sorted = [...optionsLabels].sort((a, b) => {
             const numA = parseInt(a.match(/\d+/)?.[0] || '0');
             const numB = parseInt(b.match(/\d+/)?.[0] || '0');
+            // return a.localeCompare(b);
             return numA - numB;
         });
 
-        expect(cleanOptions, 'Options should be randomized but they appear in sorted order').not.toEqual(sorted);
+        expect(optionsLabels, 'Options should be randomized but they appear in sorted order').not.toEqual(sorted);
     }
 
     verifyQuestionHidden = async (type: 'single' | 'multiple') => {
@@ -155,8 +152,8 @@ export class PublishedFormPage {
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(data.email);
         await this.fillStarRating(data.starRating);
         await this.fillOpinionScale(data.opinionScale);
-        await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.matrixRadioLabel).first().click();
-        await this.fillMatrix(2, 3);
+        await this.page.getByTestId('matrix-radio-label').first().click();
+        await this.page.locator('tr:nth-child(2) > td:nth-child(3) > .neeto-form-radio > .neeto-form-radio__checkmark').click();
         await this.page.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
         await expect(this.page.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
         await this.page.close();

@@ -46,8 +46,20 @@ export class FormBuilderPage {
         const popupPromise = this.page.waitForEvent('popup');
         await this.page.getByTestId(BUILDER_SELECTORS.previewButton).click();
         const popup = await popupPromise;
-        await popup.waitForLoadState();
+        await popup.waitForLoadState('networkidle');
         return new PublishedFormPage(popup);
+    }
+
+    triggerVisitAndStartMetrics = async (emailToFill?: string) => {
+        const popupPromise = this.page.waitForEvent('popup');
+        await this.page.getByTestId(BUILDER_SELECTORS.previewButton).click();
+        const popup = await popupPromise;
+        await popup.waitForLoadState('networkidle');
+        if (emailToFill) {
+            await popup.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill(emailToFill);
+            await popup.waitForTimeout(2000);
+        }
+        await popup.close();
     }
 
     getFormTitle = async () => {
@@ -190,7 +202,8 @@ export class FormBuilderPage {
     submitPublishedForm = async (email: string) => {
         const publishedPage = await this.getPublishedPage();
         await publishedPage.fillEmailAndSubmit(email);
-        return publishedPage;
+        await publishedPage.verifyThankYou();
+        await publishedPage.close();
     }
 
     submitFormInNewContext = async (browser: Browser, email: string) => {

@@ -12,9 +12,6 @@
     ],
     "noEmit": true,
     "paths": {
-      /*
-       * This mapping is relative to "baseUrl".
-       */
       "@auth/*": [
         "auth/*"
       ],

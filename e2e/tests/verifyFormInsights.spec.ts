@@ -34,11 +34,7 @@ test.describe("Verify form insights", () => {
         });
 
         await test.step("Step 4: Navigating to the published site completely", async () => {
-            const page1Promise = page.waitForEvent('popup');
-            await page.getByTestId(BUILDER_SELECTORS.previewButton).click();
-            const page1 = await page1Promise;
-            await page1.waitForLoadState('networkidle');
-            await page1.close();
+            await formBuilderPage.triggerVisitAndStartMetrics();
         });
 
         await test.step("Step 5: Verify the visits count increases by 1", async () => {
@@ -47,14 +43,7 @@ test.describe("Verify form insights", () => {
         });
 
         await test.step("Step 6: Open published form and type without submitting", async () => {
-            const page2Promise = page.waitForEvent('popup');
-            await page.getByTestId(BUILDER_SELECTORS.previewButton).click();
-            const page2 = await page2Promise;
-            await page2.waitForLoadState('networkidle');
-            await page2.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).click();
-            await page2.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill('hello');
-            await page2.waitForTimeout(2000);
-            await page2.close();
+            await formBuilderPage.triggerVisitAndStartMetrics('hello');
         });
 
         await test.step("Step 7: Verify visits and starts increase", async () => {
@@ -63,16 +52,8 @@ test.describe("Verify form insights", () => {
         });
 
         await test.step("Step 8: Open published form and submit it", async () => {
-            const page3Promise = page.waitForEvent('popup');
-            await page.getByTestId(BUILDER_SELECTORS.previewButton).click();
-            const page3 = await page3Promise;
-            await page3.waitForLoadState('networkidle');
-            await page3.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).click();
-            await page3.getByTestId(PUBLISHED_FORM_SELECTORS.emailField).fill('test@mail.com');
-            await page3.getByTestId(PUBLISHED_FORM_SELECTORS.submitButton).click();
-            await expect(page3.getByRole('heading', { name: PUBLISHED_FORM_TEXTS.thankYou, exact: false })).toBeVisible({ timeout: 15000 });
-            await page3.waitForTimeout(2000);
-            await page3.close();
+            await formBuilderPage.submitPublishedForm('test@mail.com');
+            
         });
 
         await test.step("Step 9: Verify all metrics increase and completion rate calculates", async () => {
