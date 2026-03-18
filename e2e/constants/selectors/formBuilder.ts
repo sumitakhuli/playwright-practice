@@ -48,6 +48,10 @@ export const QUESTION_PROPERTIES_SELECTORS = {
     contentField: 'content-text-field',
     advancedProperties: 'Advanced properties',
     fieldCodeField: 'field-code-text-field',
+    questionTextInputLabel: 'question-text-input-label',
+    matrixRowContainer: 'matrix-row-container',
+    matrixColumnContainer: 'matrix-column-container',
+    optionInput: (index: number) => `option-input-${index}`,
 };
 
 export const QUESTION_SETTINGS_SELECTORS = {

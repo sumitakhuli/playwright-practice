@@ -1,5 +1,6 @@
 import { test, expect } from '@fixtures';
 import { faker } from '@faker-js/faker';
+import { buildFormUrlWithParams } from '@utils';
 
 
 test.describe("URL Parameter", () => {
@@ -45,7 +46,6 @@ test.describe("URL Parameter", () => {
         });
 
         await test.step("Step 4.2: constructURL and navigate", async () => {
-            const urlWithParams = new URL(Url);
             const params = {
                 email: email,
                 sr: starRating.toString(),
@@ -54,12 +54,8 @@ test.describe("URL Parameter", () => {
                 'mf.2': 'two',
                 'mf.3': 'three'
             };
-            
-            Object.entries(params).forEach(([key, value]) => {
-                urlWithParams.searchParams.set(key, encodeURIComponent(value));
-            });
 
-            Url = urlWithParams.toString();
+            Url = buildFormUrlWithParams(Url, params);
             await publishedPage.page.goto(Url);
             await publishedPage.page.waitForLoadState('domcontentloaded');
         });

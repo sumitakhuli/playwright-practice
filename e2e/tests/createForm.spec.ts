@@ -19,7 +19,7 @@ test.describe("Create and submit a form", () => {
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
             email: faker.internet.email(),
-            phone: '3022223333'
+            phone: faker.phone.number()
         };
 
         await test.step("Step 1: Create a new form", async () => {
@@ -55,4 +55,3 @@ test.describe("Create and submit a form", () => {
         });
     });
 });
-

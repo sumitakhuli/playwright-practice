@@ -296,26 +296,43 @@ export class FormBuilderPage {
         await this.editQuestionProperties(2, 'Opinion Scale', 'os');
     }
 
+    private selectQuestion = async (index: number) => {
+        await this.page.getByRole('button', { name: ELEMENT_TYPE_SELECTORS.question }).nth(index).click();
+    }
+
+    private setQuestionLabel = async (label: string) => {
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.questionTextInputLabel).click();
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.contentField).fill(label);
+    }
+
+    private setMatrixRows = async () => {
+        const rowContainer = this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.matrixRowContainer);
+        await rowContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(0)).click();
+        await rowContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(0)).fill('1');
+        await rowContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(1)).click();
+        await rowContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(1)).fill('2');
+        await rowContainer.getByTestId(QUESTION_SETTINGS_SELECTORS.addOption).click();
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(2)).fill('3');
+    }
+
+    private setMatrixColumns = async () => {
+        const columnContainer = this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.matrixColumnContainer);
+        await columnContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(0)).click();
+        await columnContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(0)).fill('one');
+        await columnContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(1)).click();
+        await columnContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(1)).fill('two');
+        await columnContainer.getByTestId(QUESTION_SETTINGS_SELECTORS.addOption).click();
+        await columnContainer.getByTestId(QUESTION_PROPERTIES_SELECTORS.optionInput(2)).fill('three');
+    }
+
     editMatrix = async () => {
-          await this.page.getByRole('button', { name: 'Question' }).nth(3).click();
-          await this.page.getByTestId('question-text-input-label').click();
-          await this.page.getByTestId('content-text-field').click();
-          await this.page.getByTestId('content-text-field').fill('Matrix');
-          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-0').click();
-          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-0').fill('1');
-          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-1').click();
-          await this.page.getByTestId('matrix-row-container').getByTestId('option-input-1').fill('2');
-          await this.page.getByTestId('matrix-row-container').getByTestId('add-option-link').click();
-          await this.page.getByTestId('option-input-2').fill('3');
-          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-0').click();
-          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-0').fill('one');
-          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-1').click();
-          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-1').fill('two');
-          await this.page.getByTestId('matrix-column-container').getByTestId('add-option-link').click();
-          await this.page.getByTestId('matrix-column-container').getByTestId('option-input-2').fill('three');
-          await this.page.getByRole('button', { name: 'Advanced properties' }).click();
-          await this.page.getByTestId('field-code-text-field').fill('mf');
-          await this.page.waitForTimeout(1500);
+        await this.selectQuestion(3);
+        await this.setQuestionLabel('Matrix');
+        await this.setMatrixRows();
+        await this.setMatrixColumns();
+        await this.page.getByRole('button', { name: QUESTION_PROPERTIES_SELECTORS.advancedProperties }).click();
+        await this.page.getByTestId(QUESTION_PROPERTIES_SELECTORS.fieldCodeField).fill('mf');
+        await this.page.waitForTimeout(1500);
     }
     navigateToSubmissions = async () => {
         await this.page.getByTestId(BUILDER_SELECTORS.submissionsTab).click();
