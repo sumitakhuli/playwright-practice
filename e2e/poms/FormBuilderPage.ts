@@ -136,13 +136,13 @@ export class FormBuilderPage {
         await expect(this.page.getByTestId(SETTINGS_SELECTORS.passwordProtectedRadio)).toBeVisible({ timeout: 15000 });
     }
 
-    addAccessControlWithPassword = async () => {
+    addAccessControlWithPassword = async (password: string) => {
         await this.page.getByTestId(SETTINGS_SELECTORS.passwordProtectedRadio).check();
 
         await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
         await expect(this.page.getByTestId(SETTINGS_SELECTORS.passwordInputError)).toBeVisible({ timeout: 5000 });
 
-        await this.page.getByTestId(SETTINGS_SELECTORS.passwordInputField).fill('test');
+        await this.page.getByTestId(SETTINGS_SELECTORS.passwordInputField).fill(password);
         await this.page.getByTestId(SETTINGS_SELECTORS.saveChangesButton).click();
     }
 
@@ -152,7 +152,7 @@ export class FormBuilderPage {
         return previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
     }
 
-    FillFormWithNewContext = async (browser: Browser, email: string) => {
+    FillFormWithNewContext = async (browser: Browser, email: string, password: string) => {
         const formUrl = await this.getPublishedFormUrl();
         const newContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
         const newPage = await newContext.newPage();
@@ -160,7 +160,7 @@ export class FormBuilderPage {
         await newPage.waitForLoadState('domcontentloaded');
 
         const publishedPage = new PublishedFormPage(newPage);
-        await publishedPage.submitWithPassword('test', email);
+        await publishedPage.submitWithPassword(password, email);
         await publishedPage.verifyThankYou();
 
         await newContext.close();
@@ -207,9 +207,7 @@ export class FormBuilderPage {
     }
 
     submitFormInNewContext = async (browser: Browser, email: string) => {
-        const previewHref = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
-        const origin = new URL(this.page.url()).origin;
-        const formUrl = previewHref?.startsWith('http') ? previewHref : `${origin}${previewHref}`;
+        const formUrl = await this.page.getByTestId(BUILDER_SELECTORS.previewButton).getAttribute('href');
 
         const newContext = await browser.newContext({ storageState: { cookies: [], origins: [] } });
         const newPage = await newContext.newPage();
