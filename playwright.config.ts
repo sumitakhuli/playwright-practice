@@ -6,7 +6,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: 2,
-  workers: process.env.CI ? 1 : undefined,
+  workers: 2,
   reporter: 'html',
   use: {
     baseURL: 'https://neeto-form-web-playwright.neetodeployapp.com',

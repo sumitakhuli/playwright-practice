@@ -19,13 +19,18 @@ test.describe("Create and submit a form", () => {
     });
 
     test("Complete flow: build, validate, submit and verify", async ({ page, formBuilderPage }) => {
+        
+        // page.on('request' , (req) => {
+        //     console.log('Request: ' , req.method() , req.url())
+        // })
+        
         test.setTimeout(90000);
 
         const userData = {
             firstName: faker.person.firstName(),
             lastName: faker.person.lastName(),
             email: faker.internet.email(),
-            phone: faker.phone.number()
+            phone: '3012223333'
         };
 
         await test.step("Step 1: Add fields and publish form", async () => {
